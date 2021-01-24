@@ -1,0 +1,11 @@
+.header__user{
+  display: flex;
+  justify-content: row;
+}
+
+@media screen and (max-width: 600px){
+  .header__user{
+    display: none;
+  }
+}
+

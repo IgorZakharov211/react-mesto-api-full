@@ -1,0 +1,12 @@
+.sign__link-text{
+  color: #ffffff;
+  transition: color .3s ease-out;
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1.21;
+}
+
+.sign__link-text:hover{
+  color: #cccccc;
+}
