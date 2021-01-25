@@ -1,7 +1,7 @@
 {
   "name": "mesto-react-auth",
   "version": "0.1.0",
-  "homepage": "https://igorzakharov211.github.io/mesto-react-auth/",
+  "homepage": ".",
   "private": true,
   "description": "Mesto на React с авторизацией и регистрацией",
   "dependencies": {
