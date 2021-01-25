@@ -13,7 +13,7 @@ const { errors } = require('celebrate');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const allowedCors = [
   'igorzakharov.mesto.students.nomoredomains.rocks',
-  'http://localhost:3000'
+  'localhost:3000'
 ];
 
 mongoose.connect('mongodb://localhost:27017/mestodb',{
@@ -25,10 +25,11 @@ mongoose.connect('mongodb://localhost:27017/mestodb',{
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(function(req, res, next) {
-  const { origin } = req.headers;
-
+  const origin  = req.headers.host;
   if (allowedCors.includes(origin)) {
     res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
   }
 
   next();
