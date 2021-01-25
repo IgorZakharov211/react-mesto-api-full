@@ -11,6 +11,11 @@ const NotFoundError = require('./errors/not-found-err');
 const { PORT = 3000} = process.env;
 const { errors } = require('celebrate');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const allowedCors = [
+  'http://igorzakharov.mesto.students.nomoredomains.rocks',
+  'http://igorzakharov.mestoapi.students.nomoredomains.rocks',
+  'localhost:3000'
+];
 
 
 mongoose.connect('mongodb://localhost:27017/mestodb',{
@@ -22,9 +27,10 @@ mongoose.connect('mongodb://localhost:27017/mestodb',{
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', 'http://igorzakharov.mesto.students.nomoredomains.rocks');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
+  const  origin  = req.headers.host;
+  if (allowedCors.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
 
   next();
 });
