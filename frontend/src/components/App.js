@@ -27,7 +27,7 @@ function App() {
   const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = React.useState(false);
   const [isCardPopupOpen, setCardPopupOpen] = React.useState(false);
   const [selectedCard, setSelectedCard] = React.useState({name: 'Фотография', link: '../images/no-image.jpg'});
-  const [currentUser, setCurrentUser] = React.useState({name: 'Имя', about: 'Профессия', avatar: '../images/no-image.jpg'});
+  const [currentUser, setCurrentUser] = React.useState({name: 'Имя', about: 'Профессия', avatar: ''});
   const [cards, setCards] = React.useState([]);
   const history = useHistory();
 
@@ -35,7 +35,7 @@ function App() {
     if(localStorage.getItem('token')){
       const jwt = localStorage.getItem('token');
       Auth.getContent(jwt).then((res)=>{
-        setUserEmail(res.data.email)
+        setUserEmail(res.email)
         setLoggedIn(true);
         history.push('/');
       })
@@ -151,7 +151,7 @@ function App() {
 
   function handleUpdateUser({name, about}){
     api.patchMyInfo(name, about).then((res) => {
-      setCurrentUser({id: res._id, name: res.name, about: res.about, avatar: res.avatar});
+      setCurrentUser({id: res.data._id, name: res.data.name, about: res.data.about, avatar: res.data.avatar});
       closeAllPopups();
     })
     .catch((err) =>{
@@ -161,7 +161,7 @@ function App() {
 
   function handleUpdateAvatar({avatar}){
     api.patchMyAvatar(avatar).then((res) => {
-      setCurrentUser({id: res._id, name: res.name, about: res.about, avatar: res.avatar});
+      setCurrentUser({id: res.data._id, name: res.data.name, about: res.data.about, avatar: res.data.avatar});
       closeAllPopups();
     })
     .catch((err) =>{

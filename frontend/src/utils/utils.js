@@ -1,8 +1,11 @@
+const jwt = localStorage.getItem('token');
+
 const apiOptions = {
-  baseUrl: 'https://mesto.nomoreparties.co/v1/cohort-16',
+  baseUrl: 'http://igorzakharov.mestoapi.students.nomoredomains.rocks',
   headers: {
-    authorization: '6e729665-1bba-493d-86aa-08890e5fc87f',
-    'Content-Type': 'application/json'
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${jwt}`,
   }
 }
 
