@@ -1,0 +1,6 @@
+.header__show-more_image_close{
+  background-image: url('../../../../images/header-close.svg');
+  background-size: cover;
+  width: 30px;
+  height: 30px;
+}

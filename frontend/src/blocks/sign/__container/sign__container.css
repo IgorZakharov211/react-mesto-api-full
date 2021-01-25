@@ -1,0 +1,12 @@
+.sign__container{
+  margin: 0 auto 0 auto;
+  width: 358px;
+  height: 100%;
+}
+
+@media screen and (max-width: 425px){
+  .sign__container{
+    width: calc(100% - 60px);
+    margin: 0 auto 0 auto;
+  }
+}
