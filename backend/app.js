@@ -16,13 +16,12 @@ const allowedCors = [
   'localhost:3000'
 ];
 
-
-
 mongoose.connect('mongodb://localhost:27017/mestodb',{
   useNewUrlParser: true,
   useFindAndModify: false,
   useCreateIndex: true
 });
+
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(function(req, res, next) {
