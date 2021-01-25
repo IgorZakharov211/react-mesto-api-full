@@ -13,7 +13,7 @@ const { errors } = require('celebrate');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const allowedCors = [
   'igorzakharov.mesto.students.nomoredomains.rocks',
-  'localhost:3000'
+  'http://localhost:3000'
 ];
 
 mongoose.connect('mongodb://localhost:27017/mestodb',{
