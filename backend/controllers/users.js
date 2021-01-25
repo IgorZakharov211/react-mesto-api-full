@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const NotFoundError = require('../errors/not-found-err');
 const AuthError = require('../errors/auth-error');
+const ValidationError = require('../errors/validation-error');
 
 const getUsers = (req, res, next) => {
   User.find({})
@@ -36,24 +37,26 @@ const getProfile = (req, res, next) => {
 
 const createUser = (req, res, next) =>{
   bcrypt.hash(req.body.password, 10)
-  .then((hash) =>{
-  return User.countDocuments()
-    .then(count =>{
-      return User.create({
-        id: count,
-        name: req.body.name,
-        about: req.body.about,
-        avatar: req.body.avatar,
-        email: req.body.email,
-        password: hash
+    .then(hash => User.create({
+      email: req.body.email,
+      password: hash,
+    }))
+    .then((user) =>
+    { if(!user){
+      throw new ValidationError('Пользователь с таким Email уже существует');
+    }
+      return res.send({
+        id: user._id,
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        email: user.email
       })
-        .then(user =>{
-          res.send(user)
-        })
-        .catch(next);
-    })
-  })
-}
+    }
+
+    )
+    .catch(next);
+};
 
 const updateProfile = (req, res, next) =>{
   return User.findByIdAndUpdate(req.user._id, {name: req.body.name, about: req.body.about}, {new: true})
