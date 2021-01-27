@@ -6,11 +6,12 @@ export const register = (email, password) => {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({password, email})
+      body: JSON.stringify({email, password})
   })
   .then((response) => {
+    console.log(response)
     try{
-      if (response.status === 201){
+      if (response.status === 200){
         return response.json();
       }
     } catch(e){

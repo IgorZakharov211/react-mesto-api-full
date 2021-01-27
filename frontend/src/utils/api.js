@@ -1,11 +1,16 @@
 import apiOptions from './utils';
+const jwt = localStorage.getItem('token');
 
 class Api{
   constructor({apiOptions}){
     this._baseUrl = apiOptions.baseUrl;
-    this._headers = apiOptions.headers;
+    this._headers = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${jwt}`
+    };
   }
-  
+
   _checkRes(res){
     if (res.ok) {
       return res.json();

@@ -42,8 +42,19 @@ function App() {
       .catch((err) => console.log(err));
     }
   }
-  
+
   useEffect(() => {tokenCheck()}, [isLoggedIn])
+  
+  function handleLogin(email, password){
+    Auth.authorize(email, password).then((res) => {
+      if(res.token){
+        setLoggedIn(true);
+        history.push('/');
+      }
+    })
+    .catch((err)=> {console.log(err)})
+  }
+
 
   React.useEffect(() => {
     api.getInitialCards().then((data) =>{
@@ -83,6 +94,7 @@ function App() {
   }
 
   function handleCardLike({card}) {
+    console.log(currentUser.id)
     const isLiked = card.likes.some(i => i._id === currentUser.id);
     if (isLiked){
       api.deleteLike(card.id).then((newCard) => {
@@ -103,7 +115,6 @@ function App() {
 
   function handleDeleteCard(id){
     api.deleteCard(id).then((data) => {
-      console.log(data);
       const cardsFilter = cards.filter((item) => {
         return id !== item.id;
       });
@@ -188,15 +199,6 @@ function App() {
     });
   }
 
-  function handleLogin(email, password){
-    Auth.authorize(email, password).then((res) => {
-      if(res.token){
-        setLoggedIn(true);
-        history.push('/');
-      }
-    })
-    .catch((err)=> {console.log(err)})
-  }
 
   function handleSignOut(){
     localStorage.removeItem('token');
