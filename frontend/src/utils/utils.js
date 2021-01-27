@@ -1,5 +1,5 @@
 const apiOptions = {
-  baseUrl: 'http://localhost:3000'
+  baseUrl: 'http://igorzakharov.mestoapi.students.nomoredomains.rocks'
 }
 
 export default apiOptions;

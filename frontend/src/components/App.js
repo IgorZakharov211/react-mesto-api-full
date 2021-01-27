@@ -78,13 +78,13 @@ function App() {
     const newCards = cards.map((c) => {
       if(c.id === card.id) {
         return {
-          key: newCard._id,
-          id: newCard._id,
-          name: newCard.name,
-          link: newCard.link,
-          likes: newCard.likes,
-          owner: newCard.owner,
-          likeCount: newCard.likes.length
+          key: newCard.data._id,
+          id: newCard.data._id,
+          name: newCard.data.name,
+          link: newCard.data.link,
+          likes: newCard.data.likes,
+          owner: newCard.data.owner,
+          likeCount: newCard.data.likes.length
         };
       } else{ 
         return c;
@@ -94,8 +94,7 @@ function App() {
   }
 
   function handleCardLike({card}) {
-    console.log(currentUser.id)
-    const isLiked = card.likes.some(i => i._id === currentUser.id);
+    const isLiked = card.likes.some(i => i === currentUser.id);
     if (isLiked){
       api.deleteLike(card.id).then((newCard) => {
         changeLike(newCard, card);

@@ -12,6 +12,7 @@ const getUsers = (req, res, next) => {
 };
 
 const getUser = (req, res, next) => {
+  console.log(req.user)
   const _id = req.user._id;
   User.findOne({_id})
     .then((user) => {
