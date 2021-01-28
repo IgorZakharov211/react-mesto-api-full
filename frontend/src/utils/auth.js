@@ -1,4 +1,4 @@
-export const BASE_URL = 'http://igorzakharov.mestoapi.students.nomoredomains.rocks';
+export const BASE_URL = 'https://igorzakharov.mestoapi.students.nomoredomains.rocks';
 
 export const register = (email, password) => {
   return fetch(`${BASE_URL}/signup`, {

@@ -1,4 +1,4 @@
-export const BASE_URL = 'http://igorzakharov.mestoapi.students.nomoredomains.rocks';
+export const BASE_URL = 'https://igorzakharov.mestoapi.students.nomoredomains.rocks';
 
 const _checkRes = (res) => {
   if (res.ok) {
