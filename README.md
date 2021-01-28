@@ -30,6 +30,10 @@
 
 ## Ссылки на проект: 
 
-[**Frontend**](https://igorzakharov.mesto.students.nomoredomains.rocks);
-[**Backend**](https://igorzakharov.mestoapi.students.nomoredomains.rocks).
+*[**Frontend**](https://igorzakharov.mesto.students.nomoredomains.rocks);
+*[**Backend**](https://igorzakharov.mestoapi.students.nomoredomains.rocks).
+
+
+## Публичный ip:
+*178.154.254.210*
 
