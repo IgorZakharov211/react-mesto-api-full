@@ -1,5 +1,5 @@
 import {CurrentUserContext} from '../contexts/CurrentUserContext';
-import React, { useEffect } from 'react';
+import React, { useDebugValue, useEffect } from 'react';
 import { Switch, Route, useHistory} from 'react-router-dom';
 import Header from '../components/header/Header';
 import Main from '../components/main/Main';
@@ -8,7 +8,7 @@ import PopupWithForm from './popup_with_form/PopupWithForm';
 import EditProfilePopup from './edit_profile_popup/EditProfilePopup';
 import EditAvatarPopup from './edit_avatar_popup/EditAvatarPopup';
 import ImagePopup from '../components/image_popup/ImagePopup';
-import api from '../utils/api';
+import * as api from '../utils/api';
 import AddPlacePopup from './add_place_popup/AddPlacePopup';
 import Register from './register/Register';
 import Login from './login/Login';
@@ -28,6 +28,7 @@ function App() {
   const [isCardPopupOpen, setCardPopupOpen] = React.useState(false);
   const [selectedCard, setSelectedCard] = React.useState({name: 'Фотография', link: '../images/no-image.jpg'});
   const [currentUser, setCurrentUser] = React.useState({name: 'Имя', about: 'Профессия', avatar: ''});
+  const [currentToken, setCurrentToken] = React.useState({token: ''});
   const [cards, setCards] = React.useState([]);
   const history = useHistory();
 
@@ -35,7 +36,10 @@ function App() {
     if(localStorage.getItem('token')){
       const jwt = localStorage.getItem('token');
       Auth.getContent(jwt).then((res)=>{
-        setUserEmail(res.email)
+        setUserEmail(res.email);
+        setCurrentUser({id: res._id, name: res.name, about: res.about, avatar: res.avatar});
+        setCurrentToken({token: jwt});
+        handleInitialCards(jwt);
         setLoggedIn(true);
         history.push('/');
       })
@@ -48,6 +52,7 @@ function App() {
   function handleLogin(email, password){
     Auth.authorize(email, password).then((res) => {
       if(res.token){
+        localStorage.setItem('token', res.token);
         setLoggedIn(true);
         history.push('/');
       }
@@ -56,8 +61,8 @@ function App() {
   }
 
 
-  React.useEffect(() => {
-    api.getInitialCards().then((data) =>{
+  function handleInitialCards(token){
+    api.getInitialCards(token).then((data) =>{
       setCards(data.map((item) => ({
         key: item._id,
         id: item._id,
@@ -71,8 +76,7 @@ function App() {
     .catch((err) =>{
       console.log(err);
     });
-  }, []);
-
+  }
 
   function changeLike(newCard, card){
     const newCards = cards.map((c) => {
@@ -96,14 +100,14 @@ function App() {
   function handleCardLike({card}) {
     const isLiked = card.likes.some(i => i === currentUser.id);
     if (isLiked){
-      api.deleteLike(card.id).then((newCard) => {
+      api.deleteLike(card.id, currentToken.token).then((newCard) => {
         changeLike(newCard, card);
       })
       .catch((err) =>{
         console.log(err);
       });
     } else{
-      api.putLike(card.id).then((newCard) => {
+      api.putLike(card.id, currentToken.token).then((newCard) => {
         changeLike(newCard, card);
       })
       .catch((err) =>{
@@ -113,7 +117,7 @@ function App() {
   } 
 
   function handleDeleteCard(id){
-    api.deleteCard(id).then((data) => {
+    api.deleteCard(id, currentToken.token).then((data) => {
       const cardsFilter = cards.filter((item) => {
         return id !== item.id;
       });
@@ -123,16 +127,7 @@ function App() {
       console.log(err);
     });
   }
-
-  React.useEffect(() => {
-    api.getMyInfo().then((data) => {
-      setCurrentUser({id: data._id, name: data.name, about: data.about, avatar: data.avatar});
-    })
-    .catch((err) =>{
-      console.log(err);
-    });
-  }, [])
-  
+ 
   
   function handleEditAvatarClick(){
     setEditAvatarPopupOpen(true);
@@ -160,7 +155,7 @@ function App() {
   }
 
   function handleUpdateUser({name, about}){
-    api.patchMyInfo(name, about).then((res) => {
+    api.patchMyInfo(name, about, currentToken.token).then((res) => {
       setCurrentUser({id: res.data._id, name: res.data.name, about: res.data.about, avatar: res.data.avatar});
       closeAllPopups();
     })
@@ -170,7 +165,7 @@ function App() {
   }
 
   function handleUpdateAvatar({avatar}){
-    api.patchMyAvatar(avatar).then((res) => {
+    api.patchMyAvatar(avatar, currentToken.token).then((res) => {
       setCurrentUser({id: res.data._id, name: res.data.name, about: res.data.about, avatar: res.data.avatar});
       closeAllPopups();
     })
@@ -180,7 +175,7 @@ function App() {
   }
 
   function handleAddPlaceSubmit({title, link}){
-    api.postCard(title, link).then((res) => {
+    api.postCard(title, link, currentToken.token).then((res) => {
       const newCard = {
         key: res._id,
         id: res._id,
@@ -201,6 +196,7 @@ function App() {
 
   function handleSignOut(){
     localStorage.removeItem('token');
+    setCurrentToken({token: ''});
     history.push('/');
     setLoggedIn(false);
   }

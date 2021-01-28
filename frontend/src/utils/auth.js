@@ -34,7 +34,6 @@ export const authorize = (email, password) => {
   .then((response => response.json()))
   .then((data) => {
     if (data){
-      localStorage.setItem('token', data.token);
       return data;
     }
   })
@@ -52,4 +51,5 @@ export const getContent = (token) => {
     .then(res => {
       return res.json()
     })
-  } 
+} 
+

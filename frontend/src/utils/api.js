@@ -1,98 +1,103 @@
-import apiOptions from './utils';
-const jwt = localStorage.getItem('token');
+export const BASE_URL = 'http://igorzakharov.mestoapi.students.nomoredomains.rocks';
 
-class Api{
-  constructor({apiOptions}){
-    this._baseUrl = apiOptions.baseUrl;
-    this._headers = {
+const _checkRes = (res) => {
+  if (res.ok) {
+    return res.json();
+  }
+    return Promise.reject(`Ошибка: ${res.status}`);
+}
+
+export const getInitialCards = (jwt) =>{
+  return fetch(`${BASE_URL}/cards`, {
+    headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${jwt}`
-    };
-  }
-
-  _checkRes(res){
-    if (res.ok) {
-      return res.json();
     }
-    return Promise.reject(`Ошибка: ${res.status}`);
-  }
-
-  getInitialCards() {
-    return fetch(`${this._baseUrl}/cards`, {
-      headers: this._headers
-    })
-      .then((res) => this._checkRes(res))
-  } 
-
-  getMyInfo(){
-    return fetch(`${this._baseUrl}/users/me`, {
-      headers: this._headers
-    })
-      .then((res) => this._checkRes(res)) 
-  } 
-
-  patchMyInfo(name, about){
-    return fetch(`${this._baseUrl}/users/me`, {
-      method: 'PATCH',
-      headers: this._headers,
-      body: JSON.stringify({
-        name: name,
-        about: about
-      })
-    })
-      .then((res) => this._checkRes(res))
-  }
-
-  patchMyAvatar(avatar){
-    return fetch(`${this._baseUrl}/users/me/avatar`, {
-      method: 'PATCH',
-      headers: this._headers,
-      body: JSON.stringify({
-        avatar: avatar
-      })
-    })
-      .then((res) => this._checkRes(res))
-  }
-
-  postCard(title, url){
-    return fetch(`${this._baseUrl}/cards`, {
-      method: 'POST',
-      headers: this._headers,
-      body: JSON.stringify({
-        name: title,
-        link: url
-      })
-    })
-      .then((res) => this._checkRes(res))
-  }
-
-  deleteCard(id){
-    return fetch(`${this._baseUrl}/cards/${id}`, {
-      method: 'DELETE',
-      headers: this._headers
-    })
-      .then((res) => this._checkRes(res))
-  }
-
-  putLike(id){
-    return fetch(`${this._baseUrl}/cards/${id}/likes`, {
-      method: 'PUT',
-      headers: this._headers
-    })
-      .then((res) => this._checkRes(res))
-  }
-
-  deleteLike(id){
-    return fetch(`${this._baseUrl}/cards/${id}/likes`, {
-      method: 'DELETE',
-      headers: this._headers
-    })
-      .then((res) => this._checkRes(res))
-  }
+  })
+  .then((res) => _checkRes(res))
 }
 
-const api = new Api({apiOptions});
+export const patchMyInfo = (name, about, jwt) => {
+  return fetch(`${BASE_URL}/users/me`, {
+    method: 'PATCH',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${jwt}`
+    },
+    body: JSON.stringify({
+      name: name,
+      about: about
+    })
+  })
+  .then((res) => _checkRes(res))
+}
 
-export default api;
+export const patchMyAvatar = (avatar, jwt) => {
+  return fetch(`${BASE_URL}/users/me/avatar`, {
+    method: 'PATCH',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${jwt}`
+    },
+    body: JSON.stringify({
+      avatar: avatar
+    })
+  })
+  .then((res) => _checkRes(res))
+}
+
+export const postCard = (title, url, jwt) => {
+  return fetch(`${BASE_URL}/cards`, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${jwt}`
+    },
+    body: JSON.stringify({
+      name: title,
+      link: url
+    })
+  })
+  .then((res) => _checkRes(res))
+}
+
+export const deleteCard = (id, jwt) => {
+  return fetch(`${BASE_URL}/cards/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${jwt}`
+    }
+  })
+  .then((res) => _checkRes(res))
+}
+
+export const putLike = (id, jwt) => {
+  return fetch(`${BASE_URL}/cards/${id}/likes`, {
+    method: 'PUT',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${jwt}`
+    }
+  })
+  .then((res) => _checkRes(res))
+}
+
+export const deleteLike = (id, jwt) => {
+  return fetch(`${BASE_URL}/cards/${id}/likes`, {
+    method: 'DELETE',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${jwt}`
+    }
+  })
+  .then((res) => _checkRes(res))
+}
 
