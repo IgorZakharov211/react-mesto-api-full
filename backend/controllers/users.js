@@ -45,7 +45,7 @@ const createUser = (req, res, next) => {
     }))
     .then((user) => {
       if (!user) {
-        throw new ValidationError('Пользователь с таким Email уже существует');
+        throw new ValidationError('Неправильно указан Email!');
       }
       return res.send({
         id: user._id,
@@ -55,7 +55,16 @@ const createUser = (req, res, next) => {
         email: user.email,
       });
     })
-    .catch(next);
+    .catch((e) => {
+      if (e.code === 11000) {
+        const err = new Error('Пользователь с таким Email уже существует');
+        err.statusCode = 409;
+        next(err);
+      } else {
+        const err = new AuthError('Неправильно указан Email');
+        next(err);
+      }
+    });
 };
 
 const updateProfile = (req, res, next) => {
@@ -97,7 +106,10 @@ const login = (req, res, next) => {
       );
       res.send({ token });
     })
-    .catch(next);
+    .catch(() => {
+      const err = new AuthError('Неправильный Email или пароль');
+      next(err);
+    });
 };
 
 module.exports = {

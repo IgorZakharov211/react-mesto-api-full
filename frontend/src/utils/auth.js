@@ -9,7 +9,6 @@ export const register = (email, password) => {
       body: JSON.stringify({email, password})
   })
   .then((response) => {
-    console.log(response)
     try{
       if (response.status === 200){
         return response.json();

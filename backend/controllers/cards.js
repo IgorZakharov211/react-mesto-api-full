@@ -1,5 +1,6 @@
 const Card = require('../models/card');
 const NotFoundError = require('../errors/not-found-err');
+const AuthError = require('../errors/auth-error');
 
 const getCards = (req, res, next) => {
   Card.find({})
@@ -19,12 +20,23 @@ const createCard = (req, res, next) => {
 };
 
 const deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params._id)
-    .then((card) => {
-      if (!card) {
-        throw new NotFoundError('Карточка с таким id не найдена');
+  Card.findById(req.params._id)
+    .then((result) => {
+      /* eslint-disable eqeqeq */
+      if (req.user._id == result.owner) {
+      /* eslint-enable eqeqeq */
+        Card.findByIdAndRemove(req.params._id)
+          .then((card) => {
+            if (!card) {
+              throw new NotFoundError('Карточка с таким id не найдена');
+            }
+            return res.send(card);
+          })
+          .catch(next);
+      } else {
+        const err = new AuthError('Невозможно удалить чужую карточку');
+        next(err);
       }
-      return res.send(card);
     })
     .catch(next);
 };
