@@ -1,36 +1,36 @@
 const mongoose = require('mongoose');
 
 const cardSchema = new mongoose.Schema({
-  "name": {
+  name: {
     type: String,
     minlength: 2,
     maxlength: 30,
-    required: true
+    required: true,
   },
-  "link": {
+  link: {
     type: String,
     required: true,
     validate: {
-      validator: function(v) {
-        return /(http|https):\/\/?[a-z0-9-\._~:\/?#[\]@!$&'\(\)*\+,;=]+/gi.test(v);
+      validator: (v) => {
+        /(http|https):\/\/?[a-z0-9-._~%:/?#[\]@!$&'()*+,;=]+/gi.test(v);
       },
-      message: props => `${props.value} неправильно указана ссылка!`
-    }
+      message: (props) => `${props.value} неправильно указана ссылка!`,
+    },
   },
-  "owner": {
+  owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
-    required: true
+    required: true,
   },
-  "likes": [{
+  likes: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
-    default: []
+    default: [],
   }],
-  "createdAt":{
+  createdAt: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
 const cardModel = mongoose.model('card', cardSchema);
