@@ -19,7 +19,9 @@ router.patch('/users/me', celebrate({
 }), updateProfile);
 router.patch('/users/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().uri(),
+    /* eslint-disable */
+    avatar: Joi.string().pattern(new RegExp(/(http|https):\/\/?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/)),
+    /* eslint-enable */
   }),
 }), updateAvatar);
 

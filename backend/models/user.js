@@ -19,7 +19,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator: (v) => {
-        /(http|https):\/\/?[a-z0-9-._~%:/?#[\]@!$&'()*+,;=]+/gi.test(v);
+        /* eslint-disable */
+        /(http|https):\/\/?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/gi.test(v);
+        /* eslint-enable */
       },
       message: (props) => `${props.value} неправильно указана ссылка!`,
     },

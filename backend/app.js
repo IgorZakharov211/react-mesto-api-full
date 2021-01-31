@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 
 const app = express();
-const path = require('path');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -23,7 +22,6 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 });
 
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 app.use(requestLogger);
 app.get('/crash-test', () => {
@@ -41,7 +39,9 @@ app.use(() => {
   throw new NotFoundError('Запрашиваемый ресурс не найден');
 });
 app.use(errors());
-app.use((err, req, res) => {
+/* eslint-disable */
+app.use((err, req, res, next) => {
+/* eslint-enable */
   if (err.statusCode) {
     res.status(err.statusCode).send({ message: err.message });
   } else {
