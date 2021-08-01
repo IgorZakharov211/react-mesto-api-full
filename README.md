@@ -28,12 +28,7 @@
 * SSL сертификат выпущен с помощью [**Certbot**](https://certbot.eff.org/lets-encrypt/ubuntubionic-nginx).
 
 
-## Ссылки на проект: 
+## Ссылка на проект: 
 
-* [**Frontend**](https://igorzakharov.mesto.students.nomoredomains.rocks);
-* [**Backend**](https://igorzakharov.mestoapi.students.nomoredomains.rocks).
-
-
-## Публичный ip:
-*178.154.254.210*
+* [**Mesto**](https://mesto.zakharovigor.ru/);
 
