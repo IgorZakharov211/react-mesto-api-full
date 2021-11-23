@@ -1,5 +1,5 @@
 {
-  "name": "mesto-react-auth",
+  "name": "mesto-react",
   "version": "0.1.0",
   "homepage": ".",
   "private": true,
@@ -21,7 +21,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "npm run build && scp -r ./build/* igorzakharov211@62.84.120.228:/home/igorzakharov211/mesto-frontend"
   },
   "eslintConfig": {
     "extends": [
