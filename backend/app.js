@@ -1,21 +1,20 @@
-require('dotenv').config();
 const express = require('express');
-
-const app = express();
 const cors = require('cors');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
-const usersRouter = require('./routes/users.js');
-const cardsRouter = require('./routes/cards.js');
-const { createUser, login } = require('./controllers/users');
-const auth = require('./middlewares/auth');
+const routes = require('./routes');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
+const errorHandler = require('./middlewares/error-handler');
 const NotFoundError = require('./errors/not-found-err');
+const { notFoundError } = require('./constants');
 
 const { PORT = 3001 } = process.env;
-const { requestLogger, errorLogger } = require('./middlewares/logger');
+const { MONGO_URL } = require('./config');
 
-mongoose.connect('mongodb://localhost:27017/mestodb', {
+const app = express();
+
+mongoose.connect(MONGO_URL, {
   useNewUrlParser: true,
   useFindAndModify: false,
   useCreateIndex: true,
@@ -24,37 +23,13 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 app.use(bodyParser.json());
 app.use(cors());
 app.use(requestLogger);
-app.get('/crash-test', () => {
-  setTimeout(() => {
-    throw new Error('Сервер сейчас упадёт');
-  }, 0);
-});
-app.post('/signin', login);
-app.post('/signup', createUser);
-app.use(auth);
-app.use('/', usersRouter);
-app.use('/', cardsRouter);
+app.use(routes);
 app.use(errorLogger);
 app.use(() => {
-  throw new NotFoundError('Запрашиваемый ресурс не найден');
+  throw new NotFoundError(notFoundError);
 });
 app.use(errors());
-/* eslint-disable */
-app.use((err, req, res, next) => {
-/* eslint-enable */
-  if (err.statusCode) {
-    res.status(err.statusCode).send({ message: err.message });
-  } else {
-    const { statusCode = 500, message } = err;
-
-    res.status(statusCode).send({
-      message: statusCode === 500
-        ? 'На сервере произошла ошибка'
-        : message,
-    });
-  }
-});
-
+app.use(errorHandler);
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
 });
