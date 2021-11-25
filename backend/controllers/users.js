@@ -1,11 +1,13 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+
 const User = require('../models/user');
+const { JWT_SECRET } = require('../config');
 const NotFoundError = require('../errors/not-found-err');
 const AuthError = require('../errors/auth-error');
 const ValidationError = require('../errors/validation-error');
-
-const { NODE_ENV, JWT_SECRET } = process.env;
+const ConflictError = require('../errors/conflict-error');
+const { conflictEmail, incorrectUserId } = require('../constants');
 
 const getUsers = (req, res, next) => {
   User.find({})
@@ -18,7 +20,7 @@ const getUser = (req, res, next) => {
   User.findOne({ _id })
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Нет пользователя с таким id');
+        throw new NotFoundError(incorrectUserId);
       }
       return res.send(user);
     })
@@ -30,7 +32,7 @@ const getProfile = (req, res, next) => {
   User.findOne({ _id })
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Нет пользователя с таким id');
+        throw new NotFoundError(incorrectUserId);
       }
       return res.send(user);
     })
@@ -38,33 +40,27 @@ const getProfile = (req, res, next) => {
 };
 
 const createUser = (req, res, next) => {
-  bcrypt.hash(req.body.password, 10)
+  const { email, password } = req.body;
+  return bcrypt.hash(password, 10)
     .then((hash) => User.create({
-      email: req.body.email,
-      password: hash,
-    }))
-    .then((user) => {
-      if (!user) {
-        throw new ValidationError('Неправильно указан Email!');
-      }
-      return res.send({
-        id: user._id,
+      email, password: hash,
+    })
+      .then((user) => res.send({
+        email: user.email,
         name: user.name,
         about: user.about,
         avatar: user.avatar,
-        email: user.email,
-      });
-    })
-    .catch((e) => {
-      if (e.code === 11000) {
-        const err = new Error('Пользователь с таким Email уже существует');
-        err.statusCode = 409;
-        next(err);
-      } else {
-        const err = new AuthError('Неправильно указан Email');
-        next(err);
-      }
-    });
+      }))
+      .catch((err) => {
+        if (err.code === 11000) {
+          next(new ConflictError(conflictEmail));
+        }
+        if (err.name === 'ValidationError') {
+          next(new ValidationError(`${Object.values(err.errors).map((error) => error.message).join(', ')}`));
+        } else {
+          next(err);
+        }
+      }));
 };
 
 const updateProfile = (req, res, next) => {
@@ -72,7 +68,7 @@ const updateProfile = (req, res, next) => {
     { new: true })
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Нет пользователя с таким id');
+        throw new NotFoundError(incorrectUserId);
       } else {
         return res.send({ data: user });
       }
@@ -84,7 +80,7 @@ const updateAvatar = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, { avatar: req.body.avatar }, { new: true })
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Нет пользователя с таким id');
+        throw new NotFoundError(incorrectUserId);
       } else {
         res.send({ data: user });
       }
@@ -96,19 +92,15 @@ const login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      if (!user) {
-        throw new AuthError('Возникли проблемы с авторизацией');
-      }
       const token = jwt.sign(
         { _id: user._id },
-        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+        JWT_SECRET,
         { expiresIn: '7d' },
       );
       res.send({ token });
     })
-    .catch(() => {
-      const err = new AuthError('Неправильный Email или пароль');
-      next(err);
+    .catch((err) => {
+      next(new AuthError(err.message));
     });
 };
 

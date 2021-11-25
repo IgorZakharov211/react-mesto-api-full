@@ -1,6 +1,7 @@
 const Card = require('../models/card');
 const NotFoundError = require('../errors/not-found-err');
 const AuthError = require('../errors/auth-error');
+const { incorrectCardId, cantDeleteCard } = require('../constants');
 
 const getCards = (req, res, next) => {
   Card.find({})
@@ -23,7 +24,7 @@ const deleteCard = (req, res, next) => {
   Card.findById(req.params._id)
     .then((result) => {
       if (!result) {
-        throw new NotFoundError('Карточка с таким id не найдена');
+        throw new NotFoundError(incorrectCardId);
       }
       /* eslint-disable eqeqeq */
       if (req.user._id == result.owner) {
@@ -34,7 +35,7 @@ const deleteCard = (req, res, next) => {
           })
           .catch(next);
       } else {
-        throw new AuthError('Невозможно удалить чужую карточку');
+        throw new AuthError(cantDeleteCard);
       }
     })
     .catch(next);
@@ -48,7 +49,7 @@ const likeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        throw new NotFoundError('Карточка с таким id не найдена');
+        throw new NotFoundError(incorrectCardId);
       }
       return res.send({ data: card });
     })
@@ -63,7 +64,7 @@ const dislikeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        throw new NotFoundError('Карточка с таким id не найдена');
+        throw new NotFoundError(incorrectCardId);
       }
       return res.send({ data: card });
     })
