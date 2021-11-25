@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const { incorrectAuth } = require('../constants');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -18,10 +19,8 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
     validate: {
-      validator: (v) => {
-        /* eslint-disable */
-        /(http|https):\/\/?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/gi.test(v);
-        /* eslint-enable */
+      validator(v) {
+        return validator.isURL(v);
       },
       message: (props) => `${props.value} неправильно указана ссылка!`,
     },
@@ -29,8 +28,6 @@ const userSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    minlength: 2,
-    maxlength: 30,
     required: true,
     unique: true,
     validate: {
@@ -42,8 +39,6 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    minlength: 6,
-    maxlength: 360,
     required: true,
     select: false,
   },
@@ -53,12 +48,12 @@ userSchema.statics.findUserByCredentials = function (email, password) {
   return this.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        return Promise.reject(new Error('Неправильные почта или пароль'));
+        return Promise.reject(new Error(incorrectAuth));
       }
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            return Promise.reject(new Error('Неправильные почта или пароль'));
+            return Promise.reject(new Error(incorrectAuth));
           }
           return user;
         });
