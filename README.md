@@ -28,7 +28,7 @@
 * SSL сертификат выпущен с помощью [**Certbot**](https://certbot.eff.org/lets-encrypt/ubuntubionic-nginx).
 
 
-## Ссылка на проект: 
+#### Ссылка на проект: 
 
-* [**Mesto**](https://mesto.zakharovigor.ru/)
+https://mesto.zakharovigor.ru/
 
