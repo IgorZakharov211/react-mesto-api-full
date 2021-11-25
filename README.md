@@ -30,5 +30,5 @@
 
 ## Ссылка на проект: 
 
-* [**Mesto**](https://mesto.zakharovigor.ru/);
+* [**Mesto**](https://mesto.zakharovigor.ru/)
 
